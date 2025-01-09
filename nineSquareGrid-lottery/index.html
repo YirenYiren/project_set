@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>nine-square grid lottery</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f0f0f0;
+    }
+
+    .lottery-container {
+      display: grid;
+      grid-template-columns: repeat(3, 120px);
+      gap: 10px;
+      background-color: #fff;
+      padding: 20px;
+    }
+
+    .lottery-item {
+      width: 120px;
+      height: 120px;
+      border-radius: 5px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-color: #f9fafb;
+      transition-duration: all .3s ease;
+    }
+
+    .lottery-item img {
+      width: 60%;
+      height: auto;
+    }
+
+    .lottery-item span {
+      margin-top: 5px;
+      font-size: 14px;
+      color: #333;
+    }
+
+    .lottery-item.active {
+      background-color: #e5e7eb;
+      box-shadow: 0 0 20px #333;
+    }
+
+    .lottery-button {
+      background-color: #000;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform .2s, box-shadow .2s;
+    }
+
+    .lottery-button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, .2);
+    }
+
+    .lottery-button:active {
+      transform: scale(.9);
+    }
+
+    dialog {
+      border: none;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, .3);
+      background: white;
+      font-family: Arial, Helvetica, sans-serif;
+      width: 300px;
+      text-align: center;
+    }
+
+    dialog button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color .3s;
+    }
+
+    dialog button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="lottery-container">
+    <div class="lottery-item" id="item-0"><img src="images/img1.png" alt=""><span>智能手机</span></div>
+    <div class="lottery-item" id="item-1"><img src="images/img2.png" alt=""><span>电视机</span></div>
+    <div class="lottery-item" id="item-2"><img src="images/img3.png" alt=""><span>投影仪</span></div>
+    <div class="lottery-item" id="item-7"><img src="images/img8.png" alt=""><span>蓝牙音箱</span></div>
+    <div class="lottery-item lottery-button" id="item-8">开始抽奖</div>
+    <div class="lottery-item" id="item-3"><img src="images/img4.png" alt=""><span>智能手表</span></div>
+    <div class="lottery-item" id="item-6"><img src="images/img7.jpg" alt=""><span>显示器</span></div>
+    <div class="lottery-item" id="item-5"><img src="images/img6.png" alt=""><span>蓝牙耳机</span></div>
+    <div class="lottery-item" id="item-4"><img src="images/img5.png" alt=""><span>卡丁车</span></div>
+  </div>
+
+  <!-- dialog对话框 -->
+  <dialog id="resultDialog">
+    <p id="dialogMessage"></p>
+    <button id="closeDialog">关闭</button>
+  </dialog>
+
+  <script>
+    const items = document.querySelectorAll('.lottery-item:not(.lottery-button)');
+    const dialog = document.getElementById('resultDialog');
+    const dialogMessage = document.getElementById('dialogMessage');
+    const closeDialogButton = document.getElementById('closeDialog');
+    let currentIndex = 0;
+    let prizeIndex = Math.floor(Math.random() * 8);
+    let timer;
+
+    document.getElementById('item-8').addEventListener('click', () => {
+      if (timer) return;
+      prizeIndex = Math.floor(Math.random() * 8);
+      let speed = 100;
+      let rounds = 3;
+      let totalSteps = rounds * 8 + prizeIndex;
+
+      function startLottery(step) {
+        items[currentIndex].classList.remove('active');
+        currentIndex = (step % 8);
+        items[currentIndex].classList.add('active');
+
+        if (step < totalSteps) {
+          timer = setTimeout(() => {
+            startLottery(step + 1)
+          }, speed);
+          if (step > totalSteps - 8) {
+            speed += 30;
+          }
+        } else {
+          clearTimeout(timer);
+          timer = null;
+          setTimeout(() => {
+            // 设置对话框内容并显示
+            dialogMessage.innerText = `恭喜你获得了${items[prizeIndex].innerText}`;
+            dialog.showModal();
+          }, 500);
+        }
+      }
+      startLottery(0);
+    })
+
+    // 关闭对话框
+    closeDialogButton.addEventListener('click', () => {
+      dialog.close();
+      items[currentIndex].classList.remove('active');
+    })
+  </script>
+</body>
+
+</html>
